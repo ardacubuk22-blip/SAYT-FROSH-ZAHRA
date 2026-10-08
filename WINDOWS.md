@@ -67,6 +67,16 @@ python manage.py runserver
 4. در مرورگر گوشی بزنید: `http://192.168.1.25:8000` (عدد خودتان را بگذارید).
 5. اگر Windows پرسید «Allow access?» برای Python، گزینه‌ی **Private networks** را تأیید کنید.
 
+### دیدن سایت با رویداد و تور نمونه (بدون نیاز به کلید API)
+```
+python manage.py seed_demo
+```
+پنج رویداد و دو تور ساختگی اضافه می‌شود. بعد از دیدن سایت، با این دستور پاکشان کنید:
+```
+python manage.py seed_demo --remove
+```
+شماره‌ی واتساپ در فایل `.env` با `WHATSAPP_NUMBER=` تنظیم می‌شود (فعلاً PHONE_NUMBER است).
+
 ## ۷. اجرای جمع‌آوری (در یک PowerShell دیگر)
 ```
 cd $HOME\Documents\SAYT-FROSH-ZAHRA

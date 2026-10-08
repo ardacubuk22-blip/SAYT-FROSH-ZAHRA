@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}تورهای استانبول — Türkiye Discover{% endblock %}
+{% block content %}
+<h1>تورهای استانبول</h1>
+{% if tours %}
+<ul class="event-list">
+  {% for tour in tours %}
+  <li class="event-card">
+    <a class="card-link" href="{% url 'tours:detail' tour.pk %}">
+      {% if tour.image_url %}<img src="{{ tour.image_url }}" alt="" loading="lazy">{% endif %}
+      <div class="event-body">
+        <span class="badge">{{ tour.get_kind_display }}</span>
+        <h2>{{ tour.title }}</h2>
+        {% if tour.price %}<p class="meta">💳 {{ tour.price|floatformat:"0" }} {{ tour.currency }}</p>{% endif %}
+        {% if tour.agency %}<p class="meta">آژانس: {{ tour.agency }}</p>{% endif %}
+        <span class="code">کد: <bdi>{{ tour.code }}</bdi></span>
+      </div>
+    </a>
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<p class="empty">هنوز توری منتشر نشده است.</p>
+{% endif %}
+{% endblock %}

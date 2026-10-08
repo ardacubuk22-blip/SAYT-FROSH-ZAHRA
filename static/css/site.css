@@ -18,3 +18,34 @@ h1 { font-size: 1.3rem; }
 .source { font-size: .85rem; color: var(--accent); }
 .code { float: left; font-size: .8rem; color: var(--muted); }
 .empty { color: var(--muted); }
+
+/* --- stage 4: navigation, filters, detail pages, consent notice --- */
+a { color: inherit; }
+.nav { display: flex; gap: 14px; }
+.nav a { text-decoration: none; font-size: .95rem; }
+.card-link { display: block; text-decoration: none; color: inherit; }
+.filters { background: var(--card); border-radius: 12px; padding: 12px 14px; margin-bottom: 16px; display: grid; gap: 10px; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+.filters label { display: grid; gap: 4px; font-size: .85rem; color: var(--muted); }
+.filters .check { display: flex; align-items: center; gap: 8px; color: var(--text); font-size: .95rem; }
+select { font: inherit; padding: 8px; border: 1px solid #d1d5db; border-radius: 8px; background: #fff; width: 100%; }
+.filter-actions { display: flex; gap: 8px; }
+.btn { display: inline-block; font: inherit; font-weight: 600; text-align: center; text-decoration: none; cursor: pointer; border: 0; border-radius: 10px; padding: 10px 16px; background: var(--accent); color: #fff; }
+.btn-light { background: #eceae4; color: var(--text); }
+.btn-whatsapp { background: #1fa855; font-size: 1.05rem; }
+.pager { display: flex; justify-content: space-between; align-items: center; margin: 16px 0; gap: 8px; font-size: .9rem; }
+.detail .hero { width: 100%; aspect-ratio: 16/9; object-fit: cover; border-radius: 12px; margin-bottom: 12px; }
+.facts { display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; background: var(--card); padding: 12px 14px; border-radius: 12px; margin: 12px 0; }
+.facts dt { color: var(--muted); font-size: .9rem; }
+.facts dd { margin: 0; }
+.description { margin: 12px 0; }
+.actions { display: grid; gap: 10px; margin: 16px 0 8px; }
+.note { font-size: .8rem; color: var(--muted); }
+.plain { list-style: none; padding: 0; }
+.stops { padding-inline-start: 22px; }
+.stops li { margin-bottom: 14px; }
+.stops h3 { margin: 0 0 4px; font-size: 1rem; }
+.closed { color: var(--accent); }
+.site-footer { text-align: center; color: var(--muted); font-size: .8rem; padding: 16px 16px 90px; }
+.consent { position: fixed; inset-inline: 0; bottom: 0; background: #1f2933; color: #fff; padding: 12px 16px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; z-index: 10; font-size: .85rem; }
+.consent p { margin: 0; flex: 1 1 100%; }
+@media (min-width: 640px) { .filters { grid-template-columns: repeat(2, 1fr); } .actions { display: flex; flex-wrap: wrap; } }

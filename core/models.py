@@ -53,3 +53,26 @@ class Venue(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Interaction(models.Model):
+    """Anonymous record of a page view or WhatsApp click, kept only after the visitor agreed.
+
+    No name, phone, IP or user agent is stored: only a random id from the visitor's own cookie.
+    This is the raw material for a future recommendation system.
+    """
+
+    class Kind(models.TextChoices):
+        VIEW = "view", "بازدید"
+        WHATSAPP = "whatsapp", "کلیک واتساپ"
+
+    kind = models.CharField(max_length=20, choices=Kind.choices)
+    object_type = models.CharField(max_length=20, help_text="event / tour / university")
+    object_id = models.PositiveIntegerField()
+    visitor_id = models.CharField("شناسه‌ی ناشناس", max_length=36, db_index=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "بازدید/کلیک"
+        verbose_name_plural = "بازدیدها و کلیک‌ها"
+        ordering = ["-created_at"]

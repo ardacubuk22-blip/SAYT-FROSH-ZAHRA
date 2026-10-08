@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     "core",
     "sources",
     "events",
+    "tours",
 ]
 
 MIDDLEWARE = [
@@ -107,3 +108,6 @@ CRAWLER_USER_AGENT = os.getenv(
 CRAWLER_DELAY_SECONDS = float(os.getenv("CRAWLER_DELAY_SECONDS", "3"))
 
 WHATSAPP_NUMBER = os.getenv("WHATSAPP_NUMBER", "PHONE_NUMBER")
+
+# City shown first on the public site when the visitor has not chosen one.
+DEFAULT_CITY_SLUG = "istanbul"

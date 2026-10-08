@@ -3,13 +3,31 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% block title %}Türkiye Discover{% endblock %}</title>
+  <title>{% block title %}Türkiye Discover — رویدادها و تورهای استانبول{% endblock %}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{% static 'css/site.css' %}">
 </head>
 <body>
-  <header class="site-header"><a href="/" class="brand">Türkiye Discover</a><span class="city">استانبول</span></header>
+  <header class="site-header">
+    <a href="{% url 'events:list' %}" class="brand">Türkiye Discover</a>
+    <nav class="nav">
+      <a href="{% url 'events:list' %}">رویدادها</a>
+      <a href="{% url 'tours:list' %}">تورها</a>
+    </nav>
+  </header>
   <main class="container">{% block content %}{% endblock %}</main>
+  <footer class="site-footer">
+    <p>خرید و رزرو از طریق واتساپ به نام شما انجام می‌شود؛ این سایت فروش آنلاین ندارد.</p>
+  </footer>
+  {% if not request.COOKIES.td_consent %}
+  <form class="consent" method="post" action="{% url 'consent' %}">
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+    <p>برای بهتر شدن پیشنهادها، بازدیدها و کلیک‌های شما را <b>بدون نام و شماره و اطلاعات شخصی</b> ثبت می‌کنیم. موافقید؟</p>
+    <button name="choice" value="yes" class="btn">موافقم</button>
+    <button name="choice" value="no" class="btn btn-light">نه، ثبت نکنید</button>
+  </form>
+  {% endif %}
 </body>
 </html>

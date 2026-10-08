@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}{{ event.title_fa|default:event.title }} — Türkiye Discover{% endblock %}
+{% block content %}
+<article class="detail">
+  {% if event.image_url %}<img class="hero" src="{{ event.image_url }}" alt="">{% endif %}
+  <span class="badge">{{ event.get_category_display }}</span>
+  {% if event.is_free %}<span class="badge free">رایگان</span>{% endif %}
+  <h1>{{ event.title_fa|default:event.title }}</h1>
+  {% if event.title_fa %}<p class="original" dir="ltr">{{ event.title }}</p>{% endif %}
+
+  <dl class="facts">
+    <dt>🗓 زمان</dt>
+    <dd>{{ event.start|date:"Y/m/d — H:i" }}{% if event.end %} تا {{ event.end|date:"Y/m/d — H:i" }}{% endif %}</dd>
+    {% if event.venue %}
+    <dt>📍 مکان</dt>
+    <dd><span dir="ltr">{{ event.venue.name }}</span>{% if event.district %} — {{ event.district }}{% endif %}، {{ event.city }}</dd>
+    {% endif %}
+    <dt>💳 قیمت</dt>
+    <dd>
+      {% if event.is_free %}رایگان
+      {% elif event.price_min and event.price_max and event.price_min != event.price_max %}{{ event.price_min|floatformat:"0" }} تا {{ event.price_max|floatformat:"0" }} {{ event.currency }}
+      {% elif event.price_min %}{{ event.price_min|floatformat:"0" }} {{ event.currency }}
+      {% else %}در منبع رسمی ببینید{% endif %}
+    </dd>
+    <dt>کد رویداد</dt>
+    <dd><bdi>{{ event.code }}</bdi></dd>
+  </dl>
+
+  {% with text=event.description_fa|default:event.description %}
+  {% if text %}<div class="description" {% if not event.description_fa %}dir="auto"{% endif %}>{{ text|linebreaks }}</div>{% endif %}
+  {% endwith %}
+
+  <div class="actions">
+    <a class="btn btn-whatsapp" href="{% url 'events:whatsapp' event.pk %}">رزرو از طریق واتساپ</a>
+    <a class="btn btn-light" href="{{ event.source_url }}" target="_blank" rel="noopener">منبع رسمی ↗</a>
+    {% if event.ticket_url %}<a class="btn btn-light" href="{{ event.ticket_url }}" target="_blank" rel="noopener nofollow">لینک بلیت رسمی ↗</a>{% endif %}
+  </div>
+  <p class="note">با زدن دکمه‌ی واتساپ، پیام آماده‌ای شامل کد و عنوان رویداد باز می‌شود و ما خرید را به نام شما انجام می‌دهیم.</p>
+  <p><a href="{% url 'events:list' %}">← بازگشت به رویدادها</a></p>
+</article>
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}{{ tour.title }} — Türkiye Discover{% endblock %}
+{% block content %}
+<article class="detail">
+  {% if tour.image_url %}<img class="hero" src="{{ tour.image_url }}" alt="">{% endif %}
+  <span class="badge">{{ tour.get_kind_display }}</span>
+  <h1>{{ tour.title }}</h1>
+
+  <dl class="facts">
+    {% if tour.price %}<dt>💳 قیمت</dt><dd>{{ tour.price|floatformat:"0" }} {{ tour.currency }}</dd>{% endif %}
+    {% if tour.capacity %}<dt>👥 ظرفیت</dt><dd>{{ tour.capacity }} نفر</dd>{% endif %}
+    {% if tour.agency %}
+    <dt>آژانس برگزارکننده</dt><dd>{{ tour.agency.name }}</dd>
+    <dt>شماره‌ی مجوز آژانس</dt><dd><bdi>{{ tour.agency.license_number }}</bdi></dd>
+    {% endif %}
+    <dt>کد تور</dt><dd><bdi>{{ tour.code }}</bdi></dd>
+  </dl>
+
+  {% if tour.description %}<div class="description">{{ tour.description|linebreaks }}</div>{% endif %}
+
+  {% if dates %}
+  <h2>تاریخ‌های برگزاری</h2>
+  <ul class="plain">
+    {% for d in dates %}<li>🗓 {{ d.start_date|date:"Y/m/d" }}{% if d.end_date %} تا {{ d.end_date|date:"Y/m/d" }}{% endif %}</li>{% endfor %}
+  </ul>
+  {% endif %}
+
+  {% if stops %}
+  <h2>برنامه‌ی سفر</h2>
+  <ol class="stops">
+    {% for stop in stops %}
+    <li>
+      <h3>{{ stop.name }}</h3>
+      {% if stop.description %}<p>{{ stop.description }}</p>{% endif %}
+      {% if stop.opening_hours %}<p class="meta">🕘 ساعت کاری: <bdi>{{ stop.opening_hours }}</bdi></p>{% endif %}
+      {% if stop.closed_days %}<p class="meta closed">⛔ تعطیل: {{ stop.closed_days }}</p>{% endif %}
+    </li>
+    {% endfor %}
+  </ol>
+  {% endif %}
+
+  <div class="actions">
+    <a class="btn btn-whatsapp" href="{% url 'tours:whatsapp' tour.pk %}">رزرو از طریق واتساپ</a>
+  </div>
+  <p class="note">با زدن دکمه‌ی واتساپ، پیام آماده‌ای شامل کد و عنوان تور باز می‌شود.</p>
+  <p><a href="{% url 'tours:list' %}">← بازگشت به تورها</a></p>
+</article>
+{% endblock %}

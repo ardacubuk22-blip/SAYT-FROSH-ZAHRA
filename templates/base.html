@@ -1,0 +1,15 @@
+{% load static %}<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Türkiye Discover{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/site.css' %}">
+</head>
+<body>
+  <header class="site-header"><a href="/" class="brand">Türkiye Discover</a><span class="city">استانبول</span></header>
+  <main class="container">{% block content %}{% endblock %}</main>
+</body>
+</html>

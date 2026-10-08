@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}رویدادهای استانبول — Türkiye Discover{% endblock %}
+{% block content %}
+<h1>رویدادهای پیش رو در استانبول</h1>
+{% if events %}
+<ul class="event-list">
+  {% for event in events %}
+  <li class="event-card">
+    {% if event.image_url %}<img src="{{ event.image_url }}" alt="" loading="lazy">{% endif %}
+    <div class="event-body">
+      <span class="badge">{{ event.get_category_display }}</span>
+      {% if event.is_free %}<span class="badge free">رایگان</span>{% endif %}
+      <h2>{{ event.title_fa|default:event.title }}</h2>
+      {% if event.title_fa %}<p class="original" dir="ltr">{{ event.title }}</p>{% endif %}
+      <p class="meta">
+        🗓 {{ event.start|date:"Y/m/d — H:i" }}
+        {% if event.venue %}<br>📍 <span dir="ltr">{{ event.venue.name }}</span>{% if event.district %} — {{ event.district }}{% endif %}{% endif %}
+      </p>
+      {% if event.price_min and not event.is_free %}<p class="meta">💳 از {{ event.price_min|floatformat:"0" }} {{ event.currency }}</p>{% endif %}
+      <a class="source" href="{{ event.source_url }}" target="_blank" rel="noopener">منبع رسمی ↗</a>
+      <span class="code">کد: <bdi>{{ event.code }}</bdi></span>
+    </div>
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<p class="empty">هنوز رویدادی منتشر نشده است.</p>
+{% endif %}
+{% endblock %}

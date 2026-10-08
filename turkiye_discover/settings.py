@@ -20,7 +20,8 @@ def env_bool(name, default=False):
 
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "dev-only-insecure-key-change-me")
 DEBUG = env_bool("DJANGO_DEBUG", True)
-ALLOWED_HOSTS = [h for h in os.getenv("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split(",") if h]
+# In development any host is allowed, so the site can be opened from a phone on the same Wi-Fi.
+ALLOWED_HOSTS = [h for h in os.getenv("DJANGO_ALLOWED_HOSTS", "*" if DEBUG else "localhost").split(",") if h]
 
 INSTALLED_APPS = [
     "django.contrib.admin",

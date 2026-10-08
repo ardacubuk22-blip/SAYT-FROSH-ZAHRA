@@ -16,8 +16,8 @@ from sources.text import html_to_text, page_metadata
 from sources.validation import Invalid, validate_event
 
 LISTING = """<html><body><nav><a href="/hakkimizda">About</a></nav><main>
-<a href="/etkinlik/caz-gecesi">Caz Gecesi</a>
-<a href="/etkinlik/resim-sergisi">Resim Sergisi</a>
+<a href="/etkinliklerimiz/1/caz-gecesi">Caz Gecesi</a>
+<a href="/etkinliklerimiz/2/resim-sergisi">Resim Sergisi</a>
 <a href="https://www.biletix.com/x">Biletix</a>
 </main></body></html>"""
 
@@ -58,14 +58,14 @@ class PipelineTests(TestCase):
         self.source = Source.objects.get(adapter="kultursanat")
         base = "https://kultursanat.istanbul/"
         self.pages = {
-            base: LISTING,
-            base + "etkinlikler": "<html><body></body></html>",
-            base + "etkinlik/caz-gecesi": event_page("Caz Gecesi"),
-            base + "etkinlik/resim-sergisi": event_page("Resim Sergisi"),
+            base + "etkinliklerimiz": LISTING,
+            **{base + f"etkinliklerimiz/ara?page={n}": "<html><body></body></html>" for n in range(1, 6)},
+            base + "etkinliklerimiz/1/caz-gecesi": event_page("Caz Gecesi"),
+            base + "etkinliklerimiz/2/resim-sergisi": event_page("Resim Sergisi"),
         }
         self.results = {
-            base + "etkinlik/caz-gecesi": ai_result("Caz Gecesi"),
-            base + "etkinlik/resim-sergisi": ai_result("Resim Sergisi", confidence=0.4),
+            base + "etkinliklerimiz/1/caz-gecesi": ai_result("Caz Gecesi"),
+            base + "etkinliklerimiz/2/resim-sergisi": ai_result("Resim Sergisi", confidence=0.4),
         }
         self.extract = mock.patch.object(extraction, "extract_event", side_effect=lambda text, url: self.results[url])
         self.extract_mock = self.extract.start()
@@ -100,7 +100,7 @@ class PipelineTests(TestCase):
 
     def test_price_change_is_recorded_in_history(self):
         run_source(self.source, fetcher=FakeFetcher(self.pages))
-        url = "https://kultursanat.istanbul/etkinlik/caz-gecesi"
+        url = "https://kultursanat.istanbul/etkinliklerimiz/1/caz-gecesi"
         self.pages[url] = event_page("Caz Gecesi", extra="Yeni fiyat")
         self.results[url] = ai_result("Caz Gecesi", price=300)
 
@@ -111,7 +111,7 @@ class PipelineTests(TestCase):
         self.assertEqual((change.old_value, change.new_value), ("250.00", "300"))
 
     def test_zero_results_flags_source(self):
-        self.pages["https://kultursanat.istanbul/"] = "<html><body>bakımda</body></html>"
+        self.pages["https://kultursanat.istanbul/etkinliklerimiz"] = "<html><body>bakımda</body></html>"
         run_source(self.source, fetcher=FakeFetcher(self.pages))
         self.source.refresh_from_db()
         self.assertTrue(self.source.needs_attention)
@@ -148,7 +148,7 @@ class TextTests(TestCase):
         self.assertNotIn("var x", text)
 
     def test_metadata(self):
-        meta = page_metadata(event_page("A"), "https://kultursanat.istanbul/etkinlik/a")
+        meta = page_metadata(event_page("A"), "https://kultursanat.istanbul/etkinliklerimiz/3/a")
         self.assertEqual(meta["image_url"], "https://kultursanat.istanbul/img/A.jpg")
 
 

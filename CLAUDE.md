@@ -95,7 +95,8 @@
 - [x] مرحله‌ی ۱: برنامه و پیشنهاد تکنولوژی — تأیید شد (Django، اجرا روی Windows کاربر هم لازم است)
 - [ ] مرحله‌ی ۲: در حال انجام. ساخته شد: مدل‌ها (core/sources/events)، موتور (fetcher، text، extraction، validation، pipeline)،
       adapter اولیه‌ی kultursanat، دستور `run_sources`، پنل مدیریت، صفحه‌ی فهرست، تست‌ها، راهنمای WINDOWS.md.
-      باقی‌مانده: بررسی سایت واقعی kultursanat و اصلاح `listing_paths`/`event_link_pattern`، اجرای واقعی با کلید API.
+      سایت واقعی kultursanat بررسی و adapter اصلاح شد (آدرس رویداد: /etkinliklerimiz/<id>/<slug>، صفحه‌بندی ara?page=N).
+      باقی‌مانده: اجرای واقعی با کلید API.
       Batch API به مرحله‌ی ۳ منتقل شد (فعلاً استخراج همزمان با effort=low).
 - [ ] مرحله‌ی ۳
 - [ ] مرحله‌ی ۴

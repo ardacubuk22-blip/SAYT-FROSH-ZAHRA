@@ -53,6 +53,34 @@ def ai_result(title, days=10, confidence=0.95, price=250, **extra):
     }
 
 
+class DedupTests(TestCase):
+    def setUp(self):
+        self.source = Source.objects.get(adapter="kultursanat")
+        self.pages = {}
+        self.results = {}
+
+    def test_same_event_on_two_pages_is_marked_duplicate(self):
+        from sources.dedup import normalize_title, similar
+
+        self.assertEqual(normalize_title("İSTANBUL Caz Gecesi!"), "istanbul caz gecesi")
+        self.assertTrue(similar("Caz Gecesi", "CAZ GECESİ - Harbiye"))
+        self.assertFalse(similar("Caz Gecesi", "Resim Sergisi"))
+
+        city = City.objects.get(slug="istanbul")
+        start = timezone.now() + timedelta(days=5)
+        first = Event.objects.create(
+            title="Bir Ziyaret", category="theatre", start=start, city=city, source_url="https://a.test/1",
+            status=Event.Status.PUBLISHED,
+        )
+        second = Event.objects.create(
+            title="BİR ZİYARET - Tiyatro", category="theatre", start=start, city=city, source_url="https://b.test/2"
+        )
+        from sources.dedup import find_duplicate
+
+        self.assertEqual(find_duplicate(second), first)
+        self.assertIsNone(find_duplicate(first))
+
+
 class PipelineTests(TestCase):
     def setUp(self):
         self.source = Source.objects.get(adapter="kultursanat")
@@ -88,6 +116,17 @@ class PipelineTests(TestCase):
         self.source.refresh_from_db()
         self.assertIsNotNone(self.source.last_success)
         self.assertFalse(self.source.needs_attention)
+
+    def test_same_event_on_second_page_is_duplicate(self):
+        base = "https://kultursanat.istanbul/"
+        self.results[base + "etkinliklerimiz/2/resim-sergisi"] = ai_result("Caz Gecesi")
+        run = run_source(self.source, fetcher=FakeFetcher(self.pages))
+
+        self.assertEqual(run.duplicates, 1)
+        second = Event.objects.get(source_url=base + "etkinliklerimiz/2/resim-sergisi")
+        self.assertEqual(second.status, Event.Status.DUPLICATE)
+        self.assertEqual(second.duplicate_of.source_url, base + "etkinliklerimiz/1/caz-gecesi")
+        self.assertEqual(Event.objects.filter(status=Event.Status.PUBLISHED).count(), 1)
 
     def test_unchanged_page_skips_ai(self):
         run_source(self.source, fetcher=FakeFetcher(self.pages))

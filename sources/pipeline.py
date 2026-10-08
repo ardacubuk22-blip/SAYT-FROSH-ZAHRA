@@ -17,6 +17,7 @@ from events.models import Event, EventChange
 
 from . import extraction
 from .adapters import get_adapter
+from .dedup import find_duplicate
 from .fetcher import PoliteFetcher
 from .models import PageSnapshot, SourceRun
 from .text import content_hash, page_metadata
@@ -90,18 +91,29 @@ def process_page(source, adapter, fetcher, url, run):
     city = City.objects.get(slug=adapter.city_slug)
     event, created = _upsert_event(source, url, city, cleaned, page_hash, now)
 
-    needs_review = problems or cleaned["confidence"] < settings.REVIEW_CONFIDENCE_THRESHOLD
-    if event.status != Event.Status.REJECTED:
-        event.status = Event.Status.NEEDS_REVIEW if needs_review else Event.Status.PUBLISHED
-        event.review_reason = "\n".join(problems) or (
-            f"اطمینان پایین ({cleaned['confidence']:.2f})" if needs_review else ""
-        )
-        event.save(update_fields=["status", "review_reason"])
-
     if created:
         run.created += 1
     else:
         run.updated += 1
+
+    duplicate = find_duplicate(event) if event.status != Event.Status.REJECTED else None
+    if duplicate:
+        event.status = Event.Status.DUPLICATE
+        event.duplicate_of = duplicate
+        event.review_reason = f"تکراری با {duplicate.code}: {duplicate.title}"
+        event.save(update_fields=["status", "duplicate_of", "review_reason"])
+        run.duplicates += 1
+        return
+
+    needs_review = problems or cleaned["confidence"] < settings.REVIEW_CONFIDENCE_THRESHOLD
+    if event.status != Event.Status.REJECTED:
+        event.status = Event.Status.NEEDS_REVIEW if needs_review else Event.Status.PUBLISHED
+        event.duplicate_of = None
+        event.review_reason = "\n".join(problems) or (
+            f"اطمینان پایین ({cleaned['confidence']:.2f})" if needs_review else ""
+        )
+        event.save(update_fields=["status", "review_reason", "duplicate_of"])
+
     if event.status == Event.Status.NEEDS_REVIEW:
         run.sent_to_review += 1
 

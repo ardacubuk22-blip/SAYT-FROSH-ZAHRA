@@ -76,6 +76,7 @@ class SourceRun(models.Model):
     created = models.PositiveIntegerField("جدید", default=0)
     updated = models.PositiveIntegerField("به‌روز شده", default=0)
     sent_to_review = models.PositiveIntegerField("به صف بررسی", default=0)
+    duplicates = models.PositiveIntegerField("تکراری", default=0)
     failed = models.PositiveIntegerField("ناموفق", default=0)
     error = models.TextField("خطا", blank=True)
 

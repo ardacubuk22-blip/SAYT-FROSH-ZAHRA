@@ -23,15 +23,20 @@ class BaseAdapter:
     def listing_urls(self):
         return [urljoin(self.source.url, path) for path in self.listing_paths]
 
+    @staticmethod
+    def _bare_host(url):
+        host = urlsplit(url).hostname or ""
+        return host[4:] if host.startswith("www.") else host
+
     def find_event_links(self, fetcher):
-        host = urlsplit(self.source.url).hostname
+        host = self._bare_host(self.source.url)
         pattern = re.compile(self.event_link_pattern)
         links = []
         for listing_url in self.listing_urls():
             html = fetcher.get(listing_url).text
             for a in BeautifulSoup(html, "html.parser").find_all("a", href=True):
                 url = urldefrag(urljoin(listing_url, a["href"])).url
-                if urlsplit(url).hostname == host and pattern.search(urlsplit(url).path) and url not in links:
+                if self._bare_host(url) == host and pattern.search(urlsplit(url).path) and url not in links:
                     links.append(url)
         return links[: self.max_pages]
 

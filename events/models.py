@@ -24,6 +24,7 @@ class Event(models.Model):
         PUBLISHED = "published", "منتشر شده"
         NEEDS_REVIEW = "needs_review", "در صف بررسی"
         REJECTED = "rejected", "رد شده"
+        DUPLICATE = "duplicate", "تکراری"
 
     # Content
     title = models.CharField("عنوان اصلی", max_length=500)
@@ -62,6 +63,10 @@ class Event(models.Model):
     confidence = models.FloatField("اطمینان AI", default=0)
     content_hash = models.CharField("هش محتوا", max_length=64, blank=True)
     review_reason = models.TextField("دلیل بررسی دستی", blank=True)
+    duplicate_of = models.ForeignKey(
+        "self", on_delete=models.SET_NULL, null=True, blank=True, related_name="duplicates",
+        verbose_name="تکراریِ رویداد",
+    )
 
     status = models.CharField(
         "وضعیت", max_length=20, choices=Status.choices, default=Status.NEEDS_REVIEW, db_index=True
@@ -96,3 +101,12 @@ class EventChange(models.Model):
         verbose_name = "تغییر رویداد"
         verbose_name_plural = "تاریخچه‌ی تغییرات"
         ordering = ["-changed_at"]
+
+
+class ReviewQueueEvent(Event):
+    """Admin-only view of events waiting for a human decision (no extra table)."""
+
+    class Meta:
+        proxy = True
+        verbose_name = "رویداد در صف بررسی"
+        verbose_name_plural = "صف بررسی دستی"

@@ -1,7 +1,11 @@
+from .akm import AkmAdapter
 from .kultursanat import KultursanatAdapter
+from .sehir_tiyatrolari import SehirTiyatrolariAdapter
 
 ADAPTERS = {
     "kultursanat": KultursanatAdapter,
+    "akm": AkmAdapter,
+    "sehir_tiyatrolari": SehirTiyatrolariAdapter,
 }
 
 

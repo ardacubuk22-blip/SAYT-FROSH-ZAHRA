@@ -5,6 +5,7 @@ from django.test import TestCase
 
 from events.models import Event
 from tours.models import Tour
+from universities.models import University
 
 
 class SeedDemoTests(TestCase):
@@ -13,5 +14,6 @@ class SeedDemoTests(TestCase):
         call_command("seed_demo", stdout=StringIO())  # running twice must not duplicate
         self.assertEqual(Event.objects.count(), 5)
         self.assertEqual(Tour.objects.count(), 2)
+        self.assertEqual(University.objects.count(), 2)
         call_command("seed_demo", "--remove", stdout=StringIO())
-        self.assertEqual((Event.objects.count(), Tour.objects.count()), (0, 0))
+        self.assertEqual((Event.objects.count(), Tour.objects.count(), University.objects.count()), (0, 0, 0))

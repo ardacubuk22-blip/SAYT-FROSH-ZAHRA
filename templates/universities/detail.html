@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}{{ university.name_fa|default:university.name }} — Türkiye Discover{% endblock %}
+{% block content %}
+<article class="detail">
+  <span class="badge">{{ university.get_ownership_display }}</span>
+  <h1>{{ university.name_fa|default:university.name }}</h1>
+  {% if university.name_fa %}<p class="original" dir="ltr">{{ university.name }}</p>{% endif %}
+
+  <dl class="facts">
+    <dt>📍 شهر</dt><dd>{{ university.city }}{% if university.district %} — {{ university.district }}{% endif %}</dd>
+    <dt>🏠 خوابگاه</dt>
+    <dd>{% if university.has_dormitory is None %}نامشخص{% elif university.has_dormitory %}دارد{% else %}ندارد{% endif %}</dd>
+    <dt>تأیید وزارت علوم ایران</dt>
+    <dd class="approval {{ university.science_ministry_status }}">
+      {{ university.get_science_ministry_status_display }}
+      {% if university.science_ministry_checked %}<br><small>آخرین بررسی: {{ university.science_ministry_checked|date:"Y/m/d" }}</small>{% endif %}
+    </dd>
+    <dt>کد دانشگاه</dt><dd><bdi>{{ university.code }}</bdi></dd>
+  </dl>
+
+  {% if university.description_fa %}<div class="description">{{ university.description_fa|linebreaks }}</div>{% endif %}
+
+  <div class="actions">
+    <a class="btn btn-whatsapp" href="{% url 'universities:whatsapp' university.slug %}">مشاوره از طریق واتساپ</a>
+    {% if university.international_url %}<a class="btn btn-light" href="{{ university.international_url }}" target="_blank" rel="noopener">صفحه‌ی دانشجوی خارجی ↗</a>{% endif %}
+    {% if university.official_url %}<a class="btn btn-light" href="{{ university.official_url }}" target="_blank" rel="noopener">سایت رسمی ↗</a>{% endif %}
+  </div>
+
+  <h2>رشته‌ها</h2>
+  {% for p in programs %}
+  <section class="program">
+    <span class="badge">{{ p.get_level_display }}</span>
+    <span class="badge">{{ p.get_language_display }}</span>
+    <h3>{{ p.name_fa|default:p.name }}</h3>
+    {% if p.name_fa %}<p class="original" dir="ltr">{{ p.name }}</p>{% endif %}
+    {% if p.tuition_foreign %}<p class="meta">💳 شهریه‌ی دانشجوی خارجی: {{ p.tuition_foreign|floatformat:"0" }} {{ p.currency }}{% if p.academic_year %} (سال تحصیلی <bdi>{{ p.academic_year }}</bdi>){% endif %}</p>{% endif %}
+    {% if p.is_medical %}
+    <p class="meta approval {{ p.health_ministry_status }}">تأیید وزارت بهداشت: {{ p.get_health_ministry_status_display }}{% if p.health_ministry_checked %} — آخرین بررسی: {{ p.health_ministry_checked|date:"Y/m/d" }}{% endif %}</p>
+    {% endif %}
+    {% for c in p.cycles.all %}
+    <div class="cycle">
+      <h4>دوره‌ی پذیرش{% if c.is_open %} <span class="badge free">ثبت‌نام باز است</span>{% endif %}</h4>
+      {% if c.registration_start or c.registration_end %}
+      <p class="meta">🗓 ثبت‌نام: {% if c.registration_start %}از {{ c.registration_start|date:"Y/m/d" }}{% endif %} {% if c.registration_end %}تا {{ c.registration_end|date:"Y/m/d" }}{% endif %}</p>
+      {% endif %}
+      {% if c.requirements %}<p><b>شرایط:</b> {{ c.requirements }}</p>{% endif %}
+      {% if c.documents %}<p><b>مدارک:</b> {{ c.documents }}</p>{% endif %}
+      {% if c.scholarship %}<p><b>بورسیه:</b> {{ c.scholarship }}</p>{% endif %}
+      {% if c.registration_url %}<p><a href="{{ c.registration_url }}" target="_blank" rel="noopener">لینک ثبت‌نام ↗</a></p>{% endif %}
+    </div>
+    {% endfor %}
+  </section>
+  {% empty %}
+  <p class="empty">هنوز رشته‌ای برای این دانشگاه وارد نشده است.</p>
+  {% endfor %}
+
+  <p class="note">شهریه و تاریخ‌ها ممکن است تغییر کنند؛ قبل از اقدام، منبع رسمی را بررسی کنید. برای راهنمایی بیشتر، از طریق واتساپ مشاوره بگیرید.</p>
+  <p><a href="{% url 'universities:list' %}">← بازگشت به دانشگاه‌ها</a></p>
+</article>
+{% endblock %}

@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     "sources",
     "events",
     "tours",
+    "universities",
 ]
 
 MIDDLEWARE = [

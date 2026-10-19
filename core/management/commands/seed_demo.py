@@ -6,6 +6,7 @@ from django.utils import timezone
 from core.models import City, District, Venue
 from events.models import Event
 from tours.models import Agency, Tour, TourDate, TourStop
+from universities.models import AdmissionCycle, Program, University
 
 DEMO_URL = "https://demo.invalid/"
 
@@ -21,6 +22,7 @@ class Command(BaseCommand):
             events = Event.objects.filter(source_url__startswith=DEMO_URL).delete()[0]
             tours = Tour.objects.filter(title__startswith="[نمونه]").delete()[0]
             Agency.objects.filter(license_number="DEMO-0000").delete()
+            University.objects.filter(slug__startswith="demo-").delete()
             self.stdout.write(f"Removed demo records ({events + tours} rows).")
             return
 
@@ -77,4 +79,35 @@ class Command(BaseCommand):
                                     closed_days="دوشنبه‌ها", description="مجموعه‌ی آثار باستانی.")
             TourStop.objects.create(tour=selfg, order=2, name="Topkapı Sarayı", opening_hours="09:00–18:00",
                                     closed_days="سه‌شنبه‌ها", description="کاخ سلاطین عثمانی.")
+        self._universities(city)
         self.stdout.write(self.style.SUCCESS("Demo records added. Remove them with: python manage.py seed_demo --remove"))
+
+    def _universities(self, city):
+        """Fictional universities: no real tuition or approval status is invented for real schools."""
+        today = timezone.localdate()
+        state, _ = University.objects.get_or_create(
+            slug="demo-state", defaults=dict(
+                name="Demo State University", name_fa="[نمونه] دانشگاه دولتی نمونه", ownership="state", city=city,
+                has_dormitory=True, official_url="https://demo.invalid/uni", international_url="https://demo.invalid/uni/intl",
+                description_fa="دانشگاه ساختگی برای دیدن ظاهر سایت.",
+            ),
+        )
+        private, _ = University.objects.get_or_create(
+            slug="demo-foundation", defaults=dict(
+                name="Demo Foundation University", name_fa="[نمونه] دانشگاه وقفی نمونه", ownership="foundation",
+                city=city, has_dormitory=False,
+            ),
+        )
+        if not state.programs.exists():
+            arch = Program.objects.create(university=state, name="Architecture", name_fa="معماری", level="bachelor",
+                                          language="en", tuition_foreign=4500, currency="USD", academic_year="2026-2027")
+            AdmissionCycle.objects.create(
+                program=arch, registration_start=today - timedelta(days=5), registration_end=today + timedelta(days=30),
+                requirements="دیپلم و مدرک زبان انگلیسی.", documents="گذرنامه، ریز نمرات، مدرک زبان",
+                scholarship="بورسیه‌ی نمونه تا ۵۰٪ شهریه", registration_url="https://demo.invalid/apply",
+            )
+            Program.objects.create(university=state, name="Medicine", name_fa="پزشکی", level="bachelor",
+                                   language="tr", is_medical=True)
+        if not private.programs.exists():
+            Program.objects.create(university=private, name="Computer Engineering", name_fa="مهندسی کامپیوتر",
+                                   level="master", language="en", tuition_foreign=9000, currency="USD")

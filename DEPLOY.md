@@ -13,12 +13,7 @@
    ```
    ssh root@آدرس-IP-سرور
    ```
-2. در سرور:
-   ```
-   apt-get update && apt-get install -y git
-   git clone https://github.com/ardacubuk22-blip/sayt-frosh-zahra.git /root/td
-   ```
-   چون مخزن Private است، این دستور رمز می‌خواهد. راه ساده‌تر: فقط فایل `deploy/setup_server.sh` را با `scp` از کامپیوتر خودتان به سرور بفرستید:
+2. از کامپیوتر خودتان (در پوشه‌ی پروژه) فقط فایل نصب را به سرور بفرستید. کد پروژه را خود اسکریپت از GitHub می‌گیرد:
    ```
    scp deploy/setup_server.sh root@آدرس-IP-سرور:/root/
    ```

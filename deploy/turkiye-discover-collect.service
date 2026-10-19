@@ -1,0 +1,14 @@
+[Unit]
+Description=Türkiye Discover daily data collection
+After=network-online.target postgresql.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=turkiye
+Group=turkiye
+WorkingDirectory=/opt/turkiye-discover
+ExecStart=/opt/turkiye-discover/.venv/bin/python manage.py run_sources
+TimeoutStartSec=2h
+NoNewPrivileges=true
+PrivateTmp=true

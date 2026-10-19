@@ -221,3 +221,15 @@ class TranslationAndPageTests(TestCase):
         self.assertContains(response, "عنوان")
         self.assertNotContains(response, "İncelemede")
         self.assertContains(response, 'dir="rtl"')
+
+
+class SourceScheduleTests(TestCase):
+    def test_daily_timer_that_fires_a_little_early_still_runs(self):
+        source = Source.objects.get(adapter="kultursanat")
+        now = timezone.now()
+        source.last_run = now - timedelta(days=1) + timedelta(minutes=5)
+        self.assertTrue(source.is_due(now))
+        source.last_run = now - timedelta(hours=12)
+        self.assertFalse(source.is_due(now))
+        source.last_run = None
+        self.assertTrue(source.is_due(now))

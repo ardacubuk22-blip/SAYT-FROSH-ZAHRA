@@ -1,0 +1,15 @@
+[Unit]
+Description=Türkiye Discover website (gunicorn)
+After=network.target postgresql.service
+
+[Service]
+User=turkiye
+Group=turkiye
+WorkingDirectory=/opt/turkiye-discover
+ExecStart=/opt/turkiye-discover/.venv/bin/gunicorn turkiye_discover.wsgi:application --bind 127.0.0.1:8000 --workers 2 --timeout 30 --access-logfile -
+Restart=on-failure
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

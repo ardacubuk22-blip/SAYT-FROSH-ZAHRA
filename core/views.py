@@ -1,6 +1,7 @@
 import uuid
 
-from django.http import HttpResponseNotAllowed
+from django.db import connection
+from django.http import HttpResponse, HttpResponseNotAllowed
 from django.shortcuts import redirect
 from django.utils.http import url_has_allowed_host_and_scheme
 
@@ -22,3 +23,10 @@ def consent(request):
         response.set_cookie(CONSENT_COOKIE, "no", max_age=COOKIE_AGE, samesite="Lax")
         response.delete_cookie(VISITOR_COOKIE)
     return response
+
+
+def healthz(request):
+    """For uptime monitors: 200 if the app and the database answer."""
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT 1")
+    return HttpResponse("ok", content_type="text/plain")

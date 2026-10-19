@@ -59,7 +59,8 @@ class Source(models.Model):
 
     def is_due(self, now=None):
         now = now or timezone.now()
-        return self.last_run is None or now - self.last_run >= self.check_frequency
+        # A small grace period: a daily timer firing a few seconds earlier than yesterday must still run.
+        return self.last_run is None or now - self.last_run >= self.check_frequency - timezone.timedelta(minutes=30)
 
     def can_run(self):
         return self.is_active and self.terms_status == self.TermsStatus.ALLOWED

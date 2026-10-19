@@ -113,7 +113,7 @@
       باقی‌مانده (نیازمند کلید API): استخراج خودکار از منابع دانشگاهی و PDFهای پذیرش (pypdf).
       بررسی منابع: studyinturkiye.gov.tr, osym.gov.tr, boun.edu.tr, istanbul.edu.tr, yildiz.edu.tr, itu.edu.tr قابل دسترس‌اند؛
       ku.edu.tr (Koç) خزنده را با 403 مسدود می‌کند.
-- [ ] مرحله‌ی ۶: فایل‌ها ساخته شد (منتظر تأیید و اجرا روی سرور واقعی): تنظیمات production در settings (DATABASE_URL، whitenoise،
+- [ ] مرحله‌ی ۶: در حال انجام؛ کاربر شروع آن را خواست. فایل‌ها ساخته شد و منتظر داشتن VPS (و در صورت امکان دامنه) توسط کاربر است: تنظیمات production در settings (DATABASE_URL، whitenoise،
       HTTPS، اجبار SECRET_KEY واقعی)، requirements-server.txt (gunicorn، psycopg)، پوشه‌ی `deploy/` (setup_server.sh، deploy.sh،
       backup.sh، سرویس و تایمر systemd برای وب‌سایت، جمع‌آوری روزانه ۰۴:۰۰ و پشتیبان ۰۳:۳۰، Caddyfile)، `/healthz/`، راهنمای DEPLOY.md.
       روی gunicorn محلی با تنظیمات سرور امتحان شد؛ روی سرور واقعی هنوز نه. خرید VPS/دامنه با کاربر است.
